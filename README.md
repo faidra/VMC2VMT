@@ -1,8 +1,8 @@
 VMC2VMT
 ====
 
-*VMC2VMT* is an bridge application between [VMC Protocol](https://protocol.vmc.info/) and [Virtual Motion Tracker](https://gpsnmeajp.github.io/VirtualMotionTrackerDocument/).
-VMC2VMT behaves as VMC Marionette Application, which receives the motion data sent by a VMC Performer Application.
+*VMC2VMT* is an bridge application between [VMC Protocol](https://protocol.vmc.info/) and [Virtual Motion Tracker](https://gpsnmeajp.github.io/VirtualMotionTrackerDocument/).  
+VMC2VMT behaves as VMC Marionette Application, which receives the motion data sent by a VMC Performer Application.  
 VMC2VMT behaves as VMT User Application, which sends virtual tracker attitude to VMT Driver.
 
 Setup
