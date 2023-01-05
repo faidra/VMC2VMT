@@ -10,6 +10,7 @@ namespace VMC2VMT
     public sealed class VMCReceiver : MonoBehaviour
     {
         [SerializeField] uOscServer uOscServer;
+        [SerializeField] Logger logger;
 
         readonly ReactiveProperty<bool> available = new();
         public IReadOnlyReactiveProperty<bool> Available => available;
@@ -21,6 +22,9 @@ namespace VMC2VMT
         public IReadOnlyReactiveProperty<(Vector3 scale, Vector3 offset)> MrScaleAndOffset => mrScaleAndOffset;
 
         IReadOnlyDictionary<HumanBodyBones, ReactiveProperty<PositionAndRotation>> bonePoses;
+
+        readonly ReactiveProperty<string> vmcStatus = new("Not Received");
+        public IReadOnlyReactiveProperty<string> VmcStatus => vmcStatus;
 
         public IObservable<(HumanBodyBones humanBodyBones, PositionAndRotation pose)> BonePoses
         {
@@ -71,7 +75,7 @@ namespace VMC2VMT
                         }
                         else
                         {
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentOutOfRangeException(nameof(message.values.Length), "/VMC/Ext/OK param length is invalid");
                         }
                     case "/VMC/Ext/Root/Pos":
                         if (values.Length == 8)
@@ -87,7 +91,7 @@ namespace VMC2VMT
                         }
                         else
                         {
-                            throw new ArgumentOutOfRangeException();
+                            throw new ArgumentOutOfRangeException(nameof(message.values.Length), "/VMC/Ext/Root/Pos param length is invalid");
                         }
                     case "/VMC/Ext/Bone/Pos":
                         OnBonePosReceived((string) values[0], (float) values[1], (float) values[2], (float) values[3], (float) values[4], (float) values[5], (float) values[6], (float) values[7]);
@@ -99,18 +103,21 @@ namespace VMC2VMT
             catch (Exception e)
             {
                 Debug.LogException(e);
+                logger.AddLogError(e.Message);
             }
         }
 
         void OnOkReceived(int loaded)
         {
             available.Value = loaded == 1 /* 読み込み後 */;
+            vmcStatus.Value = $"loaded: {loaded}";
         }
 
         void OnOkReceived(int loaded, int calibrationState)
         {
             available.Value = loaded == 1  /* 読み込み後 */ &&
                 calibrationState == 3 /* Calibrated */;
+            vmcStatus.Value = $"loaded: {loaded}, calibration state: {calibrationState}";
         }
 
         void OnOkReceived(int loaded, int calibrationState, int trackingStatus)
@@ -118,17 +125,18 @@ namespace VMC2VMT
             available.Value = loaded == 1  /* 読み込み後 */ &&
                 calibrationState == 3 /* Calibrated */ &&
                 trackingStatus == 1 /* 正常 */;
+            vmcStatus.Value = $"loaded: {loaded}, calibration state: {calibrationState}, tracking status: {trackingStatus}";
         }
 
         void OnRootPosReceived(string name, float px, float py, float pz, float qx, float qy, float qz, float qw)
         {
-            if (name != "root") throw new ArgumentOutOfRangeException();
+            if (name != "root") throw new ArgumentOutOfRangeException(nameof(name), "/VMC/Ext/Root/Pos param name is invalid");
             rootPose.Value = new PositionAndRotation(new Vector3(px, py, pz), new Quaternion(qx, qy, qz, qw));
         }
 
         void OnRootPosReceived(string name, float px, float py, float pz, float qx, float qy, float qz, float qw, float sx, float sy, float sz, float ox, float oy, float oz)
         {
-            if (name != "root") throw new ArgumentOutOfRangeException();
+            if (name != "root") throw new ArgumentOutOfRangeException(nameof(name), "/VMC/Ext/Root/Pos param name is invalid");
             rootPose.Value = new PositionAndRotation(new Vector3(px, py, pz), new Quaternion(qx, qy, qz, qw));
             mrScaleAndOffset.Value = (new Vector3(sx, sy, sz), new Vector3(ox, oy, oz));
         }
