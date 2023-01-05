@@ -989,6 +989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fileName: settings.json
+  logger: {fileID: 511581104}
 --- !u!1 &433026207
 GameObject:
   m_ObjectHideFlags: 0
