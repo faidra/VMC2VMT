@@ -21,7 +21,7 @@ Usege
 Settings
 ====
 
-- You can modify the `settings.json` file in the `StreamingAssets` folder to change the virtual trackers' assignment
+- You can modify the `settings.json` file in the `VMC2VMT_Data/StreamingAssets` folder to change the virtual trackers' assignment
   - its key is HumanBodyBoneName as string
   - its value is VMT's virtual tracker index as integer
 
